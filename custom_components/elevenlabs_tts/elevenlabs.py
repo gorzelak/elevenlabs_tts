@@ -107,13 +107,14 @@ class ElevenLabsClient:
 
     async def get_userinfo(self) -> dict:
         """Get userinfo from the API."""
-        endpoint = "user/subscription"
+        _LOGGER.debug("get_userinfo executed")
+        endpoint = "user"
         self.userinfo = await self.get(endpoint)
-
         return self.userinfo
 
     async def get_voice_by_name_or_id(self, identifier: str) -> dict:
         """Get a voice by its name or ID."""
+        await self.get_userinfo()
         _LOGGER.debug("Looking for voice with identifier %s", identifier)
         for voice in self._voices:
             if voice["name"] == identifier or voice["voice_id"] == identifier:
@@ -154,7 +155,6 @@ class ElevenLabsClient:
         _LOGGER.debug("Request params: %s", params)
 
         resp = await self.post(endpoint, data, params, api_key=api_key)
-
         await self.get_userinfo()
 
         return "mp3", resp.content

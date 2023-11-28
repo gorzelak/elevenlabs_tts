@@ -79,7 +79,7 @@ class ElevenLabsProvider(TextToSpeechEntity):
             CONF_API_KEY,
             ATTR_AUDIO_OUTPUT,
         ]
-    async def _async_update_data(self):
+    async def async_update(self):
         await self._client.get_userinfo()
 
     async def async_get_tts_audio(
@@ -102,4 +102,5 @@ class ElevenLabsProvider(TextToSpeechEntity):
     @property
     def extra_state_attributes(self) -> dict:
         """Return provider attributes."""
+        _LOGGER.debug("Extra State Attributes executed")
         return {"provider": self._name, "userinfo": self._client.userinfo }
