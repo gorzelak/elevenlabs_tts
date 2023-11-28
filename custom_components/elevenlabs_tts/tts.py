@@ -7,6 +7,7 @@ from homeassistant.components.tts import (
     TtsAudioType,
     Voice,
 )
+from datetime import timedelta
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_API_KEY
 from homeassistant.core import HomeAssistant
@@ -39,16 +40,14 @@ async def async_setup_entry(
         ]
     )
 
-
 class ElevenLabsProvider(TextToSpeechEntity):
     """The ElevenLabs TTS API provider."""
 
-    def __init__(self, config_entry: ConfigEntry, client: ElevenLabsClient) -> None:
+    def __init__(self, config_entry: ConfigEntry, client: ElevenLabsClient, update_interval=timedelta(seconds=30)) -> None:
         """Initialize the provider."""
         self._client = client
         self._config_entry = config_entry
         self._name = "ElevenLabs TTS"
-
         self._attr_unique_id = f"{config_entry.entry_id}-tts"
 
     @property
@@ -80,11 +79,15 @@ class ElevenLabsProvider(TextToSpeechEntity):
             CONF_API_KEY,
             ATTR_AUDIO_OUTPUT,
         ]
+    async def _async_update_data(self):
+        await self._client.get_userinfo()
 
     async def async_get_tts_audio(
         self, message: str, language: str, options: dict | None = None
     ) -> TtsAudioType:
         """Load TTS from the ElevenLabs API."""
+
+        await self._client.get_userinfo()
         return await self._client.get_tts_audio(message, options)
 
     def async_get_supported_voices(self, language: str) -> list[Voice] | None:
@@ -99,4 +102,4 @@ class ElevenLabsProvider(TextToSpeechEntity):
     @property
     def extra_state_attributes(self) -> dict:
         """Return provider attributes."""
-        return {"provider": self._name}
+        return {"provider": self._name, "userinfo": self._client.userinfo['subscription'] }

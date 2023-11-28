@@ -52,6 +52,7 @@ class ElevenLabsClient:
 
         # [{"voice_id": str, "name": str, ...}]
         self._voices: list[dict] = []
+        self.userinfo = ""
 
     async def get(self, endpoint: str, api_key=None) -> dict:
         """Make a GET request to the API."""
@@ -104,6 +105,13 @@ class ElevenLabsClient:
 
         return self._voices
 
+    async def get_userinfo(self) -> dict:
+        """Get userinfo from the API."""
+        endpoint = "user"
+        self.userinfo = await self.get(endpoint)
+
+        return self.userinfo
+
     async def get_voice_by_name_or_id(self, identifier: str) -> dict:
         """Get a voice by its name or ID."""
         _LOGGER.debug("Looking for voice with identifier %s", identifier)
@@ -146,6 +154,9 @@ class ElevenLabsClient:
         _LOGGER.debug("Request params: %s", params)
 
         resp = await self.post(endpoint, data, params, api_key=api_key)
+
+        await self.get_userinfo()
+
         return "mp3", resp.content
 
     async def get_tts_options(
