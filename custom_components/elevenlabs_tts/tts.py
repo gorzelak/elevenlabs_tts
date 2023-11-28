@@ -102,4 +102,4 @@ class ElevenLabsProvider(TextToSpeechEntity):
     @property
     def extra_state_attributes(self) -> dict:
         """Return provider attributes."""
-        return {"provider": self._name, "userinfo": self._client.userinfo['subscription'] }
+        return {"provider": self._name, "userinfo": self._client.userinfo }

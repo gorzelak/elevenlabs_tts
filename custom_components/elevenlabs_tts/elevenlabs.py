@@ -107,7 +107,7 @@ class ElevenLabsClient:
 
     async def get_userinfo(self) -> dict:
         """Get userinfo from the API."""
-        endpoint = "user"
+        endpoint = "user/subscription"
         self.userinfo = await self.get(endpoint)
 
         return self.userinfo
